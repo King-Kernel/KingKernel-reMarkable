@@ -3689,7 +3689,11 @@ fec_probe(struct platform_device *pdev)
 		fep->phy_interface = ret;
 	}
 
+#if !defined(CONFIG_ARM64)
+#ifdef CONFIG_IMX_BUSFREQ
 	request_bus_freq(BUS_FREQ_HIGH);
+#endif
+#endif
 
 	fep->clk_ipg = devm_clk_get(&pdev->dev, "ipg");
 	if (IS_ERR(fep->clk_ipg)) {
@@ -3992,7 +3996,11 @@ static int __maybe_unused fec_runtime_suspend(struct device *dev)
 
 	clk_disable_unprepare(fep->clk_ahb);
 	clk_disable_unprepare(fep->clk_ipg);
+#if !defined(CONFIG_ARM64)
+#ifdef CONFIG_IMX_BUSFREQ
 	release_bus_freq(BUS_FREQ_HIGH);
+#endif
+#endif
 
 	return 0;
 }
@@ -4003,7 +4011,11 @@ static int __maybe_unused fec_runtime_resume(struct device *dev)
 	struct fec_enet_private *fep = netdev_priv(ndev);
 	int ret;
 
+#if !defined(CONFIG_ARM64)
+#ifdef CONFIG_IMX_BUSFREQ
 	request_bus_freq(BUS_FREQ_HIGH);
+#endif
+#endif
 	ret = clk_prepare_enable(fep->clk_ahb);
 	if (ret)
 		return ret;
